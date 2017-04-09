@@ -6,10 +6,10 @@ import javax.imageio.ImageIO;
 public class Image {
 	Pixel[][] pixels;
 	int sizeX,sizeY;
-	public Image(int x, int y, BufferedImage image)
+	public Image(BufferedImage image)
 	{
-		this.sizeX = x;
-		this.sizeY = y;
+		this.sizeX = image.getWidth();
+		this.sizeY = image.getHeight();
 		this.pixels = new Pixel[this.sizeX][this.sizeY];
 		for(int i=0;i<this.sizeX;i++)
 		{
@@ -21,5 +21,9 @@ public class Image {
 		}
 	}
 	
+	public void changeSize(int newX, int newY)
+	{
+		
+	}	
 			
 }

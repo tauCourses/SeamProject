@@ -7,18 +7,19 @@ public class Seam {
 	
 	public static void main(String[] args)
 	{
-		 try
-	    {
-	      // the line that reads the image file
-	      BufferedImage image = ImageIO.read(new File("/home/matan/Pictures/nepalFBpics/CIMG2836.JPG"));
+		try 
+		{
+			BufferedImage image = ImageIO.read(new File(args[0]));
+			Image seamImage = new Image(image);
+			seamImage.changeSize(Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+			seamImage.save(args[3]);
+			System.out.println("end");
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	      
-	      System.out.println(image.getHeight());
-	      // work with the image here ...
-	    } 
-	    catch (IOException e)
-	    {
-	      // log the exception
-	      // re-throw if desired
-	    }
+	     
 	}
 }

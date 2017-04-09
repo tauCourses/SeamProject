@@ -11,6 +11,7 @@ public class Seam {
 	    {
 	      // the line that reads the image file
 	      BufferedImage image = ImageIO.read(new File("/home/matan/Pictures/nepalFBpics/CIMG2836.JPG"));
+	      
 	      System.out.println(image.getHeight());
 	      // work with the image here ...
 	    } 

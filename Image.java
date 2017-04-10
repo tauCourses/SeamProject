@@ -38,10 +38,10 @@ public class Image {
 		BufferedImage bufferedImage = new BufferedImage(this.sizeX , this.sizeY, BufferedImage.TYPE_3BYTE_BGR);
 		for (int i = 0; i < this.sizeX; i++)
 			for (int j = 0 ; j < this.sizeY; j++)
-				bufferedImage.setRGB( i, j, (new Color(this.pixels[i][j].alpha, this.pixels[i][j].red, this.pixels[i][j].green, this.pixels[i][j].blue)).getRGB() );
+				bufferedImage.setRGB( i, j, this.pixels[i][j].c.getRGB() );
 		
 		File outputfile = new File(path);
-		ImageIO.write(bufferedImage, "jpg", new File(path));
+		ImageIO.write(bufferedImage, "jpg", outputfile);
 	}
 
 	public void changeSize(int newX, int newY)

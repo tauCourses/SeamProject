@@ -14,7 +14,15 @@ public class Pixel {
 		this.blue = c.getBlue();
 		this.red =  c.getRed();
 		c = new Color(this.red,this.green,this.blue);
-
 		this.energy = 0;
+		
 	}
+	public int getGrayScale()
+	{
+		return (red+green+blue)/3;
+	}
+	
+	
+	
+	
 }

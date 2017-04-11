@@ -17,11 +17,15 @@ public class Pixel {
 		this.energy = 0;
 		
 	}
-	public int getGrayScale()
+	public double getGrayScale()
 	{
-		return (red+green+blue)/3;
+		return ((red+green+blue)/3);
 	}
 	
+	public String toString()
+	{
+		return (x+" "+y+" "+red+" "+green+" "+blue+" "+energy);
+	}
 	
 	
 	

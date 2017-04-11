@@ -84,30 +84,34 @@ public class Image {
 		return (i >= 0)&(i<sizeX)&(j >= 0)&(j<sizeY);
 	}
 	
-	public int calculatePixelEntropy(int x, int y)
+	public double calculatePixelEntropy(int x, int y)
 	{
 		double entropy = 0;
+		int graySacleSum = 0;
 		for (int i = -4; i < 5; i++)
 		{
 			for (int j = -4; j < 5; j++)
 			{
 				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
 				{
-					entropy += funcP(i,j)*(int)Math.log(funcP(i,j));
+					graySacleSum += pixels[x+i][y+j].getGrayScale();
+				}
+			}
+		}
+		double funcP;
+		for (int i = -4; i < 5; i++)
+		{
+			for (int j = -4; j < 5; j++)
+			{
+				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
+				{
+					funcP = (pixels[x+i][y+j].getGrayScale()/graySacleSum);
+					entropy += funcP*Math.log(funcP);
 				}
 			}
 		}
 		
-		return (int)entropy;
+		return (-entropy);
 	}
-	
-	public int funcP(int x, int y) //calculate Pmn function per pixel using Pixel.getGrayScale
-	{
-		int pValue = 0;
-		
-		
-		return pValue;
-	}
-
 			
 }

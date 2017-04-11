@@ -13,6 +13,8 @@ public class Seam {
 			Image seamImage = new Image(image);
 			seamImage.changeSize(Integer.parseInt(args[1]), Integer.parseInt(args[2]));
 			seamImage.save(args[3]);
+			seamImage.calculateImageEnergy();
+			System.out.println(seamImage.pixels[0][0]);
 			System.out.println("end");
 		} 
 		catch (IOException e) {

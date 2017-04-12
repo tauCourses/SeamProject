@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 public class Image {
 	Pixel[][] pixels;
 	int sizeX,sizeY;
+	 BufferedImage grayImage;
 	public Image(BufferedImage image)
 	{
 		this.sizeX = image.getWidth();
@@ -64,19 +65,21 @@ public class Image {
 	public int calculatePixelGradient(int x, int y)
 	{
 		int gradient = 0;
+		int numOfNeighbors = 0;
 		for (int i = -1; i < 2; i++)
 		{
 			for (int j = -1; j < 2; j++)
 			{
 				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
 				{
+					numOfNeighbors++;
 					gradient += Math.abs(pixels[x][y].red - pixels[x+i][y+j].red);
 					gradient += Math.abs(pixels[x][y].green - pixels[x+i][y+j].green);
 					gradient += Math.abs(pixels[x][y].blue - pixels[x+i][y+j].blue);
 				}
 			}
 		}
-		return gradient;
+		return gradient/numOfNeighbors;
 	}
 	
 	public boolean isPixelInBounds(int i, int j)
@@ -94,7 +97,7 @@ public class Image {
 			{
 				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
 				{
-					graySacleSum += pixels[x+i][y+j].getGrayScale();
+					graySacleSum += pixels[x+i][y+j].grayScale;
 				}
 			}
 		}
@@ -105,7 +108,7 @@ public class Image {
 			{
 				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
 				{
-					funcP = (pixels[x+i][y+j].getGrayScale()/graySacleSum);
+					funcP = (pixels[x+i][y+j].grayScale/graySacleSum);
 					entropy += funcP*Math.log(funcP);
 				}
 			}

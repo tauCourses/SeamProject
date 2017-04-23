@@ -49,7 +49,6 @@ public class FastImage
 
 	public void save(String path) throws IOException {
 		File outputfile = new File(path);
-		System.out.println(" ww" + this.width);
 		 BufferedImage bufferedImage = new BufferedImage(this.width,
 		 this.height, BufferedImage.TYPE_INT_RGB);
 		 for (int i = 0; i < this.height; i++)
@@ -67,6 +66,11 @@ public class FastImage
 	public void calculateImageEnergy() {
 		int gradientWeight = 1;
 		int entropyWeight = 0;
+		/*if (energyType == 1)
+			entropyWeight = 1;
+		if (energyType == 2)
+			;//forward energy TBD
+			*/
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
 				energy[i * width + j] = ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
@@ -177,7 +181,7 @@ public class FastImage
     	}
     }
     
-    public void substruct(int seams)
+    public void substruct(int seams, int energyType)
     {
     	System.out.println("Starting energy calculation, please hold...");
     	this.calculateImageEnergy();

@@ -22,32 +22,10 @@ public class Seam {
 			
 			//testing for fastImage
 			FastImage fastSeamImage = new FastImage(image);
-			System.out.println("Starting energy calculation, please hold...");
-			fastSeamImage.calculateImageEnergy();
-			//System.out.println("update energy seam dynamically...");
-			fastSeamImage.printEnergy();
-			//System.out.println("First pixle's energy1: "+fastSeamImage.energy[1]);
-		
-			fastSeamImage.updateEnergyDynamically();
-			System.out.println("sum energy:");
-			fastSeamImage.printSumEnergy();
-			System.out.println("substruct...");
-			fastSeamImage.substruct();
-			System.out.println("new energy:");
-			fastSeamImage.printEnergy();
+			fastSeamImage.substruct(10);
 			
-			fastSeamImage.updateEnergyDynamically();
-			System.out.println("sum energy:");
-			fastSeamImage.printSumEnergy();
-			System.out.println("substruct...");
-			fastSeamImage.substruct();
-			System.out.println("new energy:");
-			fastSeamImage.printEnergy();
-			
-			//System.out.println("First pixle's red,green,blue and grayscale values: "+fastSeamImage.getRed(0,0)+" "+fastSeamImage.getGreen(0,0)+" "+fastSeamImage.getBlue(0,0)+" "+fastSeamImage.getGrayScale(0,0));
 			System.out.println("end");
 			fastSeamImage.save(args[3]);
-			//end of testing of fastImage
 		} 
 		catch (IOException e) {
 			// TODO Auto-generated catch block

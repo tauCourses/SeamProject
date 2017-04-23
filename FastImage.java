@@ -65,8 +65,8 @@ public class FastImage
 		int entropyWeight = 0;
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
-				energy[i * width + j] = (gradientWeight * calculatePixelGradient(i, j)
-						+ entropyWeight * calculatePixelEntropy(i, j)) / (gradientWeight + entropyWeight);
+				energy[i * width + j] = (gradientWeight * calculatePixelGradient(i, j));
+						//+ entropyWeight * calculatePixelEntropy(i, j)) / (gradientWeight + entropyWeight);
 			}
 		}
 	}
@@ -138,7 +138,7 @@ public class FastImage
     
     public int getPixelColor(int x, int y, RGBcolor color)
     {   
-        return (pixels[(y * pixelLength * width) + (x * pixelLength) + hasAlphaChannel+color.value]&0xff) ; 
+        return (pixels[(x * pixelLength * width) + (y * pixelLength) + hasAlphaChannel+color.value]&0xff) ; 
     }
       
     

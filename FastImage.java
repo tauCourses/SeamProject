@@ -7,6 +7,7 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -46,16 +47,16 @@ public class FastImage
 
 	public void save(String path) throws IOException {
 		File outputfile = new File(path);
-//		 BufferedImage bufferedImage = new BufferedImage(this.width,
-//		 this.height, BufferedImage.TYPE_INT_RGB);
-//		 for (int i = 0; i < this.height; i++)
-//		 for (int j = 0; j < this.width; j++)
-//		 bufferedImage.setRGB( j, i, getRGB(i, j));
-//		 ImageIO.write(bufferedImage, "bmp", outputfile);
+		 BufferedImage bufferedImage = new BufferedImage(this.width,
+		 this.height, BufferedImage.TYPE_INT_RGB);
+		 for (int i = 0; i < this.height; i++)
+		 for (int j = 0; j < this.width; j++)
+		 bufferedImage.setRGB( j, i, getRGB(i, j));
+		 ImageIO.write(bufferedImage, "bmp", outputfile);
 		
-		BufferedImage img = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
-		img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(pixels, pixels.length), new Point()));
-		ImageIO.write(img, "bmp", outputfile);
+//		BufferedImage img = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
+//		img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(pixels, pixels.length), new Point()));
+//		ImageIO.write(img, "bmp", outputfile);
 
 	}
 	
@@ -65,8 +66,7 @@ public class FastImage
 		int entropyWeight = 0;
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) {
-				energy[i * width + j] = (gradientWeight * calculatePixelGradient(i, j));
-						//+ entropyWeight * calculatePixelEntropy(i, j)) / (gradientWeight + entropyWeight);
+				energy[i * width + j] = ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
 			}
 		}
 	}
@@ -123,7 +123,7 @@ public class FastImage
 	// getters
     public int getRGB(int x, int y)
     {
-        int pos = (y * pixelLength * width) + (x * pixelLength);
+        int pos = (x * pixelLength * width) + (y * pixelLength);
 
         int argb = -16777216; // 255 alpha
         if (hasAlphaChannel == 1)
@@ -144,7 +144,7 @@ public class FastImage
     
     public int getGrayScale(int x, int y)
     {
-        int pos = (y * pixelLength * width) + (x * pixelLength) + hasAlphaChannel;
+        int pos = (x * pixelLength * width) + (y * pixelLength) + hasAlphaChannel;
 
         int argb = 0;
         
@@ -154,24 +154,6 @@ public class FastImage
         return argb/3;
     }
     
-    //setters
-    public void setRed(int x, int y, int newRed)
-    {
-        int pos = (y * pixelLength * width) + (x * pixelLength) + hasAlphaChannel;   
-        pixels[pos+2] = (byte)newRed; 
-    }
-    
-    public void setGreen(int x, int y, int newGreen)
-    {
-        int pos = (y * pixelLength * width) + (x * pixelLength) + hasAlphaChannel;
-        pixels[pos+1] = (byte)newGreen; 
-    }
-    
-    public void setBlue(int x, int y, int newBlue)
-    {
-        int pos = (y * this.pixelLength * this.width) + (x * this.pixelLength) + hasAlphaChannel;
-        this.pixels[pos] = (byte)newBlue; 
-    }
     
     public void updateEnergyDynamically()
     {
@@ -254,6 +236,18 @@ public class FastImage
     }
     public void createNewImage()
     {
+    	byte[] actualPixels = new byte[this.height*this.acutualWidth*this.pixelLength];
+    	float[] actualEnergy = new float[this.height*this.acutualWidth];
+    	for (int i = 0; i < this.height; i++)
+    	{
+    		System.out.println(i);
+    		System.arraycopy(this.pixels, i*this.width, actualPixels, i*this.acutualWidth, (this.acutualWidth*this.pixelLength));
+    		System.arraycopy(this.energy, i*this.width, actualEnergy, i*this.acutualWidth, this.acutualWidth);
+    	}
+    	this.pixels = actualPixels;
+    	this.energy = actualEnergy;
+    	this.width = this.acutualWidth;
+    	
     	
     }
 }

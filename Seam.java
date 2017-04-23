@@ -46,6 +46,7 @@ public class Seam {
 			
 			//System.out.println("First pixle's red,green,blue and grayscale values: "+fastSeamImage.getRed(0,0)+" "+fastSeamImage.getGreen(0,0)+" "+fastSeamImage.getBlue(0,0)+" "+fastSeamImage.getGrayScale(0,0));
 			System.out.println("end");
+			fastSeamImage.createNewImage();
 			fastSeamImage.save(args[3]);
 			//end of testing of fastImage
 		} 

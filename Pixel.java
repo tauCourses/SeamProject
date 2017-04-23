@@ -1,5 +1,3 @@
-package SeamProject;
-
 
 import java.awt.Color;
 

@@ -1,3 +1,5 @@
+package SeamProject;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -94,7 +96,7 @@ public class FastImage
 			{
 				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
 				{
-					graySacleSum += getGraySacle(x+i,y+j);
+					graySacleSum += getGrayScale(x+i,y+j);
 				}
 			}
 		}
@@ -110,7 +112,7 @@ public class FastImage
 				{
 					//if (funcParray[i] ==Double.MAX_VALUE)
 					//	funcParray[i] = (getGraySacle(x+i,y+j)/graySacleSum);
-					funcP = (getGraySacle(x+i,y+j)/graySacleSum);
+					funcP = (getGrayScale(x+i,y+j)/graySacleSum);
 					if (funcP!=0)
 						entropy += funcP*Math.log(funcP);
 				}
@@ -170,7 +172,7 @@ public class FastImage
     }
     
     
-    public int getGraySacle(int x, int y)
+    public int getGrayScale(int x, int y)
     {
         int pos = (y * pixelLength * width) + (x * pixelLength);
 
@@ -209,12 +211,24 @@ public class FastImage
     
     public void setBlue(int x, int y, int newBlue)
     {
-        int pos = (y * pixelLength * width) + (x * pixelLength);
-        if (hasAlphaChannel)
+        int pos = (y * this.pixelLength * this.width) + (x * this.pixelLength);
+        if (this.hasAlphaChannel)
         {
         	pos++;
         }
-        pixels[pos] = (byte)newBlue; 
+        this.pixels[pos] = (byte)newBlue; 
+    }
+    
+    private void updateEnergyDynamically()
+    {
+    	for(int i = this.height - 2; i>=0; i--)
+    	{
+    		this.energy[i * this.width] += Math.min(this.energy[(i+1) * this.width], this.energy[(i+1) * this.width] + 1);
+    		for(int j=1;j<this.width-1;j++)
+    			this.energy[i * this.width+j] += Math.min(this.energy[(i+1) * this.width+j-1],Math.min(this.energy[(i+1) * this.width+j], this.energy[(i+1) * this.width] + j + 1));	
+    		
+    		this.energy[i * this.width] += Math.min(this.energy[(i+1) * this.width], this.energy[(i+1) * this.width] + 1);  	
+    	}
     }
     
 }

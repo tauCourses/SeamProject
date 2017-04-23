@@ -1,3 +1,5 @@
+package SeamProject;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +27,7 @@ public class Seam {
 			fastSeamImage.save(args[3]);
 			System.out.println("Starting energy calculation, please hold...");
 			fastSeamImage.calculateImageEnergy();
-			System.out.println("First pixle's red,green,blue and grayscale values: "+fastSeamImage.getRed(0,0)+" "+fastSeamImage.getGreen(0,0)+" "+fastSeamImage.getBlue(0,0)+" "+fastSeamImage.getGraySacle(0,0));
+			System.out.println("First pixle's red,green,blue and grayscale values: "+fastSeamImage.getRed(0,0)+" "+fastSeamImage.getGreen(0,0)+" "+fastSeamImage.getBlue(0,0)+" "+fastSeamImage.getGrayScale(0,0));
 			System.out.println("First pixle's energy: "+fastSeamImage.energy[0]);
 			System.out.println("end");
 			//end of testing of fastImage

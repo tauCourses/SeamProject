@@ -176,16 +176,18 @@ public class FastImage
     {
     	System.out.println("Starting energy calculation, please hold...");
     	this.calculateImageEnergy();
+    	System.out.println("start substructing");
     	this.printEnergy();
     	for(int i=0;i<seams;i++)
     	{
     		this.updateEnergyDynamically();
     		this.substructLine();
-//    		System.out.println("after " + i + "substruct:");
-  //      	this.printEnergy();
+    		System.out.println("after " + i + "substruct:");
+        	this.printEnergy();
     	}
-    	System.out.println("after substruct:");
-    	this.printEnergy();
+    	System.out.println("");
+    	//System.out.println("after substruct:");
+    	//this.printEnergy();
     }
     
     public void substructLine()
@@ -217,7 +219,7 @@ public class FastImage
     	}
 
     	this.actualWidth--;
-    	//System.out.println("lines:");
+    	System.out.println("lines:");
     	for(int i=0;i<this.height;i++)
     	{
     		if(isPixelInBounds(i, lowestIndex[i]))
@@ -226,9 +228,9 @@ public class FastImage
     		if(isPixelInBounds(i, lowestIndex[i]-1))
     			energy[i * width + lowestIndex[i]-1] = calculatePixelGradient(i, lowestIndex[i]-1);
     		
-    		//	System.out.print("" + lowestIndex[i]+ " ");
+    			System.out.print("" + lowestIndex[i]+ " ");
     	}
-    	//System.out.println("");
+    	System.out.println("");
     	
     }
     public int findLowestEnergyInLine(int line, int start, int end)
@@ -278,7 +280,6 @@ public class FastImage
     	float[] actualEnergy = new float[this.height*this.actualWidth];
     	for (int i = 0; i < this.height; i++)
     	{
-    		System.out.println(i);
     		System.arraycopy(this.pixels, i*this.width, actualPixels, i*this.actualWidth, (this.actualWidth*this.pixelLength));
     		System.arraycopy(this.energy, i*this.width, actualEnergy, i*this.actualWidth, this.actualWidth);
     	}

@@ -13,14 +13,6 @@ public class Seam {
 		{
 			BufferedImage image = ImageIO.read(new File(args[0]));
 		
-//			Image seamImage = new Image(image);
-//			seamImage.changeSize(Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-//			seamImage.save(args[3]);
-//			seamImage.calculateImageEnergy();
-//			System.out.println(seamImage.pixels[0][0]);
-//			System.out.println("end");
-			
-			//testing for fastImage
 			FastImage fastSeamImage = new FastImage(image);
 			fastSeamImage.substruct(10);
 			

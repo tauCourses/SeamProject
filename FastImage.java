@@ -1,5 +1,10 @@
+
+//package SeamProject;
+
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 
@@ -23,7 +28,8 @@ public class FastImage
     public byte[] pixels;
     public float[] energy;
     public float[] energySum;
-    public FastImage(BufferedImage image)
+
+	public FastImage(BufferedImage image)
     {
 
         pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
@@ -37,37 +43,40 @@ public class FastImage
         energySum = new float[width*height];
 
     }
-    
-	public void save(String path) throws IOException
-	{
-		BufferedImage bufferedImage = new BufferedImage(this.width , this.height, BufferedImage.TYPE_3BYTE_BGR);
-		for (int i = 0; i < this.width; i++)
-			for (int j = 0 ; j < this.height; j++)
-				bufferedImage.setRGB( i, j, getRGB(i,j) );
+
+	public void save(String path) throws IOException {
 		File outputfile = new File(path);
-		ImageIO.write(bufferedImage, "jpg", outputfile);
-	}
-	
-	public void calculateImageEnergy()
-	{
-		int gradientWeight = 1; 
-		int entropyWeight = 1;
-		for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)//weight is equal if (1*gradient+1*entropy)/2
-				energy[j*width+i] = (gradientWeight*calculatePixelGradient(i,j));//+entropyWeight*calculatePixelEntropy(i,j))/(gradientWeight+entropyWeight);
-				
+//		 BufferedImage bufferedImage = new BufferedImage(this.width,
+//		 this.height, BufferedImage.TYPE_INT_RGB);
+//		 for (int i = 0; i < this.height; i++)
+//		 for (int j = 0; j < this.width; j++)
+//		 bufferedImage.setRGB( j, i, getRGB(i, j));
+//		 ImageIO.write(bufferedImage, "bmp", outputfile);
+		
+		BufferedImage img = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
+		img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(pixels, pixels.length), new Point()));
+		ImageIO.write(img, "bmp", outputfile);
 
 	}
 	
-	public float calculatePixelGradient(int x, int y)
-	{
+
+	public void calculateImageEnergy() {
+		int gradientWeight = 1;
+		int entropyWeight = 0;
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.width; j++) {
+				energy[i * width + j] = (gradientWeight * calculatePixelGradient(i, j)
+						+ entropyWeight * calculatePixelEntropy(i, j)) / (gradientWeight + entropyWeight);
+			}
+		}
+	}
+
+	public float calculatePixelGradient(int x, int y) {
 		int gradient = 0;
 		int numOfNeighbors = 0;
-		for (int i = -1; i < 2; i++)
-		{
-			for (int j = -1; j < 2; j++)
-			{
-				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
+		for (int i = -1; i < 2; i++) {
+			for (int j = -1; j < 2; j++) {
+				if (isPixelInBounds(x + i, y + j) & (!(i == 0 & j == 0))) 
 				{
 					numOfNeighbors++;
 					gradient += Math.abs(getPixelColor(x,y,RGBcolor.RED) - getPixelColor(x+i,y+j,RGBcolor.RED));
@@ -77,56 +86,40 @@ public class FastImage
 			}
 		}
 		
-		if (x==0 && y==0)
-			System.out.println("grad- "+gradient+" and numOfNeigh-"+numOfNeighbors);
 		
 		return gradient/(float)numOfNeighbors;
-		
 	}
 	
-	public boolean isPixelInBounds(int i, int j)
-	{
-		return (i >= 0)&(i<width)&(j >= 0)&(j<height);
+	public boolean isPixelInBounds(int i, int j) {
+		return (i >= 0) & (i < this.height) & (j >= 0) & (j < this.width);
 	}
-	
-	public float calculatePixelEntropy(int x, int y)
-	{
+
+	public float calculatePixelEntropy(int x, int y) {
 		float entropy = 0;
-		int graySacleSum = 0;
-		for (int i = -4; i < 5; i++)
-		{
-			for (int j = -4; j < 5; j++)
-			{
-				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
+		int grayScaleSum = 0;
+		for (int i = -4; i < 5; i++) {
+			for (int j = -4; j < 5; j++) {
+				if (isPixelInBounds(x + i, y + j) & (!(i == 0 & j == 0))) 
 				{
-					graySacleSum += getGrayScale(x+i,y+j);
+					grayScaleSum += getGrayScale(x + i, y + j);
 				}
 			}
 		}
 		float funcP;
-		//double[] funcParray = new double[width*height];
-		//for (int i = 0; i < funcParray.length; i++)
-		//	funcParray[i] = Double.MAX_VALUE;
-		for (int i = -4; i < 5; i++)
-		{
-			for (int j = -4; j < 5; j++)
-			{
-				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
+		for (int i = -4; i < 5; i++) {
+			for (int j = -4; j < 5; j++) {
+				if (isPixelInBounds(x + i, y + j) & (!(i == 0 & j == 0))) 
 				{
-					//if (funcParray[i] ==Double.MAX_VALUE)
-					//	funcParray[i] = (getGraySacle(x+i,y+j)/graySacleSum);
-					funcP = (getGrayScale(x+i,y+j)/graySacleSum);
-					if (funcP!=0)
-						entropy += funcP*Math.log(funcP);
+					funcP = ((float)getGrayScale(x + i, y + j) /grayScaleSum);
+					if (funcP != 0)
+						entropy += funcP * Math.log(funcP);
 				}
 			}
 		}
-		//if (x==0&y==10)
-		//	System.out.println("entropy: "+-entropy+" and graySacleSum:"+graySacleSum);
-		
+
 		return (-entropy);
 	}
-    
+
 	// getters
     public int getRGB(int x, int y)
     {

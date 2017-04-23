@@ -47,11 +47,12 @@ public class FastImage
 
 	public void save(String path) throws IOException {
 		File outputfile = new File(path);
+		System.out.println(" ww" + this.width);
 		 BufferedImage bufferedImage = new BufferedImage(this.width,
 		 this.height, BufferedImage.TYPE_INT_RGB);
 		 for (int i = 0; i < this.height; i++)
-		 for (int j = 0; j < this.width; j++)
-		 bufferedImage.setRGB( j, i, getRGB(i, j));
+			 for (int j = 0; j < this.width; j++)
+				 bufferedImage.setRGB( j, i, getRGB(i, j));
 		 ImageIO.write(bufferedImage, "bmp", outputfile);
 		
 //		BufferedImage img = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
@@ -176,7 +177,7 @@ public class FastImage
     {
     	System.out.println("Starting energy calculation, please hold...");
     	this.calculateImageEnergy();
-    	this.printEnergy();
+    	//this.printEnergy();
     	for(int i=0;i<seams;i++)
     	{
     		this.updateEnergyDynamically();
@@ -185,7 +186,7 @@ public class FastImage
   //      	this.printEnergy();
     	}
     	System.out.println("after substruct:");
-    	this.printEnergy();
+    	//this.printEnergy();
     }
     
     public void substructLine()
@@ -278,8 +279,7 @@ public class FastImage
     	float[] actualEnergy = new float[this.height*this.actualWidth];
     	for (int i = 0; i < this.height; i++)
     	{
-    		System.out.println(i);
-    		System.arraycopy(this.pixels, i*this.width, actualPixels, i*this.actualWidth, (this.actualWidth*this.pixelLength));
+    		System.arraycopy(this.pixels, i*this.width*this.pixelLength, actualPixels, i*this.actualWidth*this.pixelLength, (this.actualWidth*this.pixelLength));
     		System.arraycopy(this.energy, i*this.width, actualEnergy, i*this.actualWidth, this.actualWidth);
     	}
     	this.pixels = actualPixels;

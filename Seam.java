@@ -12,9 +12,9 @@ public class Seam {
 		try 
 		{
 			BufferedImage image = ImageIO.read(new File(args[0]));
-		
+			System.out.println("start");
 			FastImage fastSeamImage = new FastImage(image);
-			fastSeamImage.add(200);
+			fastSeamImage.add(300);
 			
 			System.out.println("end");
 			fastSeamImage.save(args[3]);

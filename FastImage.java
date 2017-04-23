@@ -31,6 +31,9 @@ public class FastImage
     public byte[] pixels;
     public float[] energy;
     public float[] energySum;
+    public float avgEnergy;
+    public int gradientWeight = 1;
+	public int entropyWeight = 1;
 
 	public FastImage(BufferedImage image)
     {
@@ -49,7 +52,6 @@ public class FastImage
 
 	public void save(String path) throws IOException {
 		File outputfile = new File(path);
-		System.out.println(" ww" + this.width);
 		 BufferedImage bufferedImage = new BufferedImage(this.width,
 		 this.height, BufferedImage.TYPE_INT_RGB);
 		 for (int i = 0; i < this.height; i++)
@@ -65,15 +67,26 @@ public class FastImage
 	
 
 	public void calculateImageEnergy() {
-		int gradientWeight = 1;
-		int entropyWeight = 0;
+		
 		for (int i = 0; i < this.height; i++) {
-			for (int j = 0; j < this.width; j++) {
-				energy[i * width + j] = ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
-			}
+			for (int j = 0; j < this.width; j++) 
+				this.energy[i * width + j] = calcEnergy(i,j);
 		}
+		float sum = 0;
+		float max = 0;
+		for(int k=0;k<this.energy.length;k++)
+		{
+			sum += this.energy[k];
+			if(this.energy[k]>max)
+				max = this.energy[k];
+		}
+		avgEnergy = sum/this.energy.length *2;
+		System.out.println("avg : " + avgEnergy + " max - " + max);
 	}
-
+	public float calcEnergy(int i, int j)
+	{
+		return ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
+	}
 	public float calculatePixelGradient(int x, int y) {
 		int gradient = 0;
 		int numOfNeighbors = 0;
@@ -199,16 +212,10 @@ public class FastImage
     
     public void substructLine()
     {	
-    	System.out.println("line");
     	int[] lowestIndex = new int[this.height]; 
 		lowestIndex[0] = findLowestEnergyInLine(0,0,this.actualWidth);
-		System.out.println("i " + lowestIndex[0]);
 		
-    	System.out.println((lowestIndex[0]+1)* this.pixelLength);
-    	System.out.println(lowestIndex[0]* this.pixelLength);
-    	System.out.println((this.actualWidth - lowestIndex[0]-1) * this.pixelLength);
-    	System.out.println(this.pixels.length);
-		System.arraycopy(this.energy, lowestIndex[0]+1, this.energy, lowestIndex[0], this.actualWidth - lowestIndex[0] - 1);
+    	System.arraycopy(this.energy, lowestIndex[0]+1, this.energy, lowestIndex[0], this.actualWidth - lowestIndex[0] - 1);
 		System.arraycopy(this.pixels, 
 						(lowestIndex[0]+1)* this.pixelLength, 
 						this.pixels, 
@@ -244,10 +251,10 @@ public class FastImage
     	for(int i=0;i<this.height;i++)
     	{
     		if(isPixelInBounds(i, lowestIndex[i]))
-    			energy[i * width + lowestIndex[i]] = calculatePixelGradient(i, lowestIndex[i]) + 2;
+    			energy[i * width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i]) + this.avgEnergy;
     		
     		if(isPixelInBounds(i, lowestIndex[i]-1))
-    			energy[i * width + lowestIndex[i]-1] = calculatePixelGradient(i, lowestIndex[i]-1) + 2;
+    			energy[i * width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1) + this.avgEnergy;
     		
     	//	System.out.print("" + lowestIndex[i]+ " ");
     	}
@@ -381,24 +388,21 @@ public class FastImage
     	//System.out.println("lines:");
     	for(int i=0;i<this.height;i++)
     	{
-    		/*for(int k=0; k<this.pixelLength;k++)
+    		for(int k=0; k<this.pixelLength;k++)
     		{
     			if(lowestIndex[i] == 0)
     				break;
-    			int temp = (int)this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k];
-    			System.out.print("temp: " +temp);
-	    		temp +=		(int)this.pixels[(this.width*i+lowestIndex[i]-1)* this.pixelLength +k];
-	    		System.out.print("temp2: "  + temp);
-	    		System.out.println("last: " +temp/2);
+    			int temp = (int)(this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k]&0xff);
+	    		temp +=		(int)(this.pixels[(this.width*i+lowestIndex[i]-1)* this.pixelLength +k]&0xff);
+	    		
 	    		this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k] = (byte)(temp/2);
-	    	}*/
+	    	}
     		if(isPixelInBounds(i, lowestIndex[i]))
-    			energy[i * this.width + lowestIndex[i]] = calculatePixelGradient(i, lowestIndex[i]) + 50;
-    		
+    			energy[i * this.width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i]) + avgEnergy;
     		if(isPixelInBounds(i, lowestIndex[i]-1))
-    			energy[i * this.width + lowestIndex[i]-1] = calculatePixelGradient(i, lowestIndex[i]-1) +50;
+    			energy[i * this.width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1) +avgEnergy;
     		if(isPixelInBounds(i, lowestIndex[i]+1))
-    			energy[i * this.width + lowestIndex[i]+1] = calculatePixelGradient(i, lowestIndex[i]+1) +50;
+    			energy[i * this.width + lowestIndex[i]+1] = calcEnergy(i, lowestIndex[i]+1) +avgEnergy;
     	//	System.out.print("" + lowestIndex[i]+ " ");
     	}
     	//System.out.println("");

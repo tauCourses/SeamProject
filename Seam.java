@@ -25,6 +25,7 @@ public class Seam {
 			fastSeamImage.substruct(10);
 			
 			System.out.println("end");
+			fastSeamImage.createNewImage();
 			fastSeamImage.save(args[3]);
 		} 
 		catch (IOException e) {

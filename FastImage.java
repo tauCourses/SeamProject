@@ -47,11 +47,12 @@ public class FastImage
 
 	public void save(String path) throws IOException {
 		File outputfile = new File(path);
+		System.out.println(" ww" + this.width);
 		 BufferedImage bufferedImage = new BufferedImage(this.width,
 		 this.height, BufferedImage.TYPE_INT_RGB);
 		 for (int i = 0; i < this.height; i++)
-		 for (int j = 0; j < this.width; j++)
-		 bufferedImage.setRGB( j, i, getRGB(i, j));
+			 for (int j = 0; j < this.width; j++)
+				 bufferedImage.setRGB( j, i, getRGB(i, j));
 		 ImageIO.write(bufferedImage, "bmp", outputfile);
 		
 //		BufferedImage img = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
@@ -156,6 +157,8 @@ public class FastImage
     
     public void updateEnergyDynamically()
     {
+    	for(int j=0;j<this.actualWidth;j++)
+    		this.energySum[(this.width)*(this.height-1) + j] = this.energy[(this.width)*(this.height-1) + j];
     	for(int i = this.height - 2; i>=0; i--)
     	{
     		this.energySum[i * this.actualWidth] = this.energy[i * this.actualWidth] + 
@@ -177,14 +180,17 @@ public class FastImage
     	System.out.println("Starting energy calculation, please hold...");
     	this.calculateImageEnergy();
     	System.out.println("start substructing");
-    	this.printEnergy();
+    	//this.printEnergy();
+    	
     	for(int i=0;i<seams;i++)
     	{
-    		this.updateEnergyDynamically();
+    		if(i%10 == 0)
+    			this.updateEnergyDynamically();
     		this.substructLine();
-    		System.out.println("after " + i + "substruct:");
-        	this.printEnergy();
+    		//System.out.println("after " + i + "substruct:");
+        	//this.printEnergy();
     	}
+
     	System.out.println("");
     	//System.out.println("after substruct:");
     	//this.printEnergy();
@@ -192,45 +198,56 @@ public class FastImage
     
     public void substructLine()
     {	
+    	System.out.println("line");
     	int[] lowestIndex = new int[this.height]; 
 		lowestIndex[0] = findLowestEnergyInLine(0,0,this.actualWidth);
+		System.out.println("i " + lowestIndex[0]);
+		
     	if(lowestIndex[0]<actualWidth-1)
     	{
     		System.arraycopy(this.energy, lowestIndex[0]+1, this.energy, lowestIndex[0], this.actualWidth - lowestIndex[0] - 1);
     		System.arraycopy(this.pixels, 
-    						lowestIndex[0]+ this.pixelLength, 
+    						(lowestIndex[0]+1)* this.pixelLength, 
     						this.pixels, 
-    						lowestIndex[0] , 
+    						lowestIndex[0]* this.pixelLength, 
     						(this.actualWidth - lowestIndex[0]-1) * this.pixelLength );
+//    		this.pixels[this.width*0 + lowestIndex[0]*this.pixelLength] = 0;
+//			this.pixels[this.width*0 + lowestIndex[0]*this.pixelLength+1] = 0;
+//			this.pixels[this.width*0 + lowestIndex[0]*this.pixelLength+2] = 0;
     	}
     	
     	for(int i=1; i<this.height;i++)
     	{
+    		
     		lowestIndex[i] = findLowestEnergyInLine(i,lowestIndex[i-1]-1,lowestIndex[i-1]+1);
     		if(lowestIndex[i]<actualWidth-1)
         	{
     			System.arraycopy(this.energy, this.width*i+lowestIndex[i]+1, this.energy, this.width*i+lowestIndex[i], this.actualWidth - lowestIndex[i] - 1);
     			System.arraycopy(this.pixels, 
-    							this.width*i+lowestIndex[i] + this.pixelLength, 
+    							(this.width*i+lowestIndex[i] +1 )* this.pixelLength, 
     							this.pixels, 
-    							this.width*i+lowestIndex[i] , 
+    							(this.width*i+lowestIndex[i])*this.pixelLength , 
     							(this.actualWidth - lowestIndex[i] -1 )*this.pixelLength);
-        	}
+//    			this.pixels[(this.width*i + lowestIndex[i])*this.pixelLength] = 0;
+//    			this.pixels[(this.width*i + lowestIndex[i])*this.pixelLength+1] = 0;
+//    			this.pixels[(this.width*i + lowestIndex[i])*this.pixelLength+2] = 0;
+//    			
+    		}
     	}
 
     	this.actualWidth--;
-    	System.out.println("lines:");
+    	//System.out.println("lines:");
     	for(int i=0;i<this.height;i++)
     	{
     		if(isPixelInBounds(i, lowestIndex[i]))
-    			energy[i * width + lowestIndex[i]] = calculatePixelGradient(i, lowestIndex[i]);
+    			energy[i * width + lowestIndex[i]] = calculatePixelGradient(i, lowestIndex[i]) + 50;
     		
     		if(isPixelInBounds(i, lowestIndex[i]-1))
-    			energy[i * width + lowestIndex[i]-1] = calculatePixelGradient(i, lowestIndex[i]-1);
+    			energy[i * width + lowestIndex[i]-1] = calculatePixelGradient(i, lowestIndex[i]-1) + 50;
     		
-    			System.out.print("" + lowestIndex[i]+ " ");
+    	//	System.out.print("" + lowestIndex[i]+ " ");
     	}
-    	System.out.println("");
+    	//System.out.println("");
     	
     }
     public int findLowestEnergyInLine(int line, int start, int end)
@@ -280,7 +297,7 @@ public class FastImage
     	float[] actualEnergy = new float[this.height*this.actualWidth];
     	for (int i = 0; i < this.height; i++)
     	{
-    		System.arraycopy(this.pixels, i*this.width, actualPixels, i*this.actualWidth, (this.actualWidth*this.pixelLength));
+    		System.arraycopy(this.pixels, i*this.width*this.pixelLength, actualPixels, i*this.actualWidth*this.pixelLength, (this.actualWidth*this.pixelLength));
     		System.arraycopy(this.energy, i*this.width, actualEnergy, i*this.actualWidth, this.actualWidth);
     	}
     	this.pixels = actualPixels;

@@ -14,7 +14,7 @@ public class Seam {
 			BufferedImage image = ImageIO.read(new File(args[0]));
 		
 			FastImage fastSeamImage = new FastImage(image);
-			fastSeamImage.substruct(10);
+			fastSeamImage.substruct(50);
 			
 			System.out.println("end");
 			fastSeamImage.createNewImage();

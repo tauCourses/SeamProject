@@ -33,7 +33,7 @@ public class FastImage
     
 	public void save(String path) throws IOException
 	{
-		BufferedImage bufferedImage = new BufferedImage(this.width , this.height, BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage bufferedImage = new BufferedImage(this.width , this.height, BufferedImage.TYPE_INT_RGB);
 		for (int i = 0; i < this.width; i++)
 			for (int j = 0 ; j < this.height; j++)
 				bufferedImage.setRGB( i, j, getRGB(i,j) );
@@ -43,7 +43,7 @@ public class FastImage
 	
 	public void calculateImageEnergy()
 	{
-		int gradientWeight = 1; 
+		int gradientWeight = 99; 
 		int entropyWeight = 1 ;
 		for (int i = 0; i < width; i++)
 		{
@@ -72,8 +72,6 @@ public class FastImage
 			}
 		}
 		
-		//if (x==0&y==10)
-		//	System.out.println("grad- "+gradient+" and numOfNeigh-"+numOfNeighbors);
 		
 		return gradient/numOfNeighbors;
 		
@@ -99,25 +97,18 @@ public class FastImage
 			}
 		}
 		float funcP;
-		//double[] funcParray = new double[width*height];
-		//for (int i = 0; i < funcParray.length; i++)
-		//	funcParray[i] = Double.MAX_VALUE;
 		for (int i = -4; i < 5; i++)
 		{
 			for (int j = -4; j < 5; j++)
 			{
 				if (isPixelInBounds(x+i,y+j)&(!(x==i&y==j))) //if neighbor not out of bounds and not pixels[x][y] itself
 				{
-					//if (funcParray[i] ==Double.MAX_VALUE)
-					//	funcParray[i] = (getGraySacle(x+i,y+j)/graySacleSum);
 					funcP = (getGraySacle(x+i,y+j)/graySacleSum);
 					if (funcP!=0)
 						entropy += funcP*Math.log(funcP);
 				}
 			}
 		}
-		//if (x==0&y==10)
-		//	System.out.println("entropy: "+-entropy+" and graySacleSum:"+graySacleSum);
 		
 		return (-entropy);
 	}

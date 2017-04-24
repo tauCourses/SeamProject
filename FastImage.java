@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+
 import javax.imageio.ImageIO;
 
 import org.omg.Messaging.SyncScopeHelper;
@@ -34,6 +35,8 @@ public class FastImage
     public float avgEnergy;
     public int gradientWeight = 1;
 	public int entropyWeight = 1;
+	public int energyType;
+	
 
 	public FastImage(BufferedImage image)
     {
@@ -47,27 +50,29 @@ public class FastImage
       
         energy = new float[width*height];
         energySum = new float[width*height];
-
+        
     }
 
 	public void save(String path) throws IOException {
+		System.arraycopy(this.pixels, this.width*2*this.pixelLength, this.pixels, 0, this.width*this.pixelLength);
+		
 		File outputfile = new File(path);
-		 BufferedImage bufferedImage = new BufferedImage(this.width,
+/*		 BufferedImage bufferedImage = new BufferedImage(this.width,
 		 this.height, BufferedImage.TYPE_INT_RGB);
 		 for (int i = 0; i < this.height; i++)
 			 for (int j = 0; j < this.width; j++)
 				 bufferedImage.setRGB( j, i, getRGB(i, j));
-		 ImageIO.write(bufferedImage, "bmp", outputfile);
+		 ImageIO.write(bufferedImage, "bmp", outputfile);*/
 		
-//		BufferedImage img = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
-//		img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(pixels, pixels.length), new Point()));
-//		ImageIO.write(img, "bmp", outputfile);
+		BufferedImage img = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
+		img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(pixels, pixels.length), new Point()));
+		ImageIO.write(img, "bmp", outputfile);
 
 	}
 	
 
 	public void calculateImageEnergy() {
-		
+
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) 
 				this.energy[i * width + j] = calcEnergy(i,j);
@@ -83,10 +88,12 @@ public class FastImage
 		avgEnergy = sum/this.energy.length *2;
 		System.out.println("avg : " + avgEnergy + " max - " + max);
 	}
+	
 	public float calcEnergy(int i, int j)
 	{
 		return ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
 	}
+	
 	public float calculatePixelGradient(int x, int y) {
 		int gradient = 0;
 		int numOfNeighbors = 0;
@@ -128,7 +135,7 @@ public class FastImage
 				{
 					funcP = ((float)getGrayScale(x + i, y + j) /grayScaleSum);
 					if (funcP != 0)
-						entropy += funcP * Math.log(funcP);
+						entropy += funcP * Math.log(funcP+0.1);
 				}
 			}
 		}

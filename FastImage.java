@@ -122,7 +122,6 @@ public class FastImage
 				return ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
 			case 2:
 				return calculateForwardEnergy(i,j);
-				// this.energy[i*this.width+j];
 		}
 		return 0;
 	}
@@ -135,9 +134,7 @@ public class FastImage
 				if (isPixelInBounds(x + i, y + j) & (!(i == 0 & j == 0))) 
 				{
 					numOfNeighbors++;
-					gradient += Math.abs(getPixelColor(x,y,RGBcolor.RED) - getPixelColor(x+i,y+j,RGBcolor.RED));
-					gradient += Math.abs(getPixelColor(x,y,RGBcolor.GREEN) - getPixelColor(x+i,y+j,RGBcolor.GREEN));
-					gradient += Math.abs(getPixelColor(x,y,RGBcolor.BLUE) - getPixelColor(x+i,y+j,RGBcolor.BLUE));
+					gradient += calculateGradientForTwoPixels(x, y, x+i, y+j);
 				}
 			}
 		}

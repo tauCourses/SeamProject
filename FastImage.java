@@ -69,6 +69,7 @@ public class FastImage
             return filename.substring(index + 1);
         }
     }
+	
 	public void save(String path) throws IOException {
 		System.arraycopy(this.pixels, this.width*2*this.pixelLength, this.pixels, 0, this.width*this.pixelLength);
 		
@@ -205,19 +206,9 @@ public class FastImage
     	for(int j=0;j<this.actualWidth;j++)
     		this.energySum[(this.width)*(this.height-1) + j] = this.energy[(this.width)*(this.height-1) + j];
     	for(int i = this.height - 2; i>=0; i--)
-    	{
-    		this.energySum[i * this.width] = this.energy[i * this.width] + 
-    				Math.min(this.energySum[(i+1) * this.width], this.energySum[(i+1) * this.width+1]);
-    		for(int j=1;j<this.actualWidth-1;j++)
-    			this.energySum[i * this.width+j] = this.energy[i * this.width+j] + 
-    						Math.min(this.energySum[(i+1) * this.width+j-1],
-    						Math.min(this.energySum[(i+1) * this.width+j], this.energySum[(i+1) * this.width + j + 1]));	
-    		
-    		this.energySum[i * this.width+this.actualWidth-1] =  
-    				this.energy[i * this.width + this.actualWidth-1] + 
-    				Math.min(this.energySum[(i+1) * this.width + this.actualWidth-1], 
-    						this.energySum[(i+1) * this.width+ this.actualWidth-1-1]);  	
-    	}
+    		for(int j=0; j<this.actualWidth; j++)
+    		this.energySum[i * this.width + j] = this.energy[i * this.width + j] + this.energySum[(i+1) * this.width + j];
+    	
     }
     
     public void substruct(int seams)
@@ -260,7 +251,7 @@ public class FastImage
     	for(int i=1; i<this.height;i++)
     	{
     		
-    		lowestIndex[i] = findLowestEnergyInLine(i,lowestIndex[i-1]-1,lowestIndex[i-1]+1);
+    		lowestIndex[i] = lowestIndex[i-1];
     		if(lowestIndex[i]<actualWidth-1)
         	{
     			System.arraycopy(this.energy, this.width*i+lowestIndex[i]+1, this.energy, this.width*i+lowestIndex[i], this.actualWidth - lowestIndex[i] - 1);
@@ -398,7 +389,7 @@ public class FastImage
     	for(int i=1; i<this.height;i++)
     	{
     		
-    		lowestIndex[i] = findLowestEnergyInLine(i,lowestIndex[i-1]-1,lowestIndex[i-1]+1);
+    		lowestIndex[i] = lowestIndex[i-1];
     		if(lowestIndex[i]<actualWidth-1)
         	{
     			System.arraycopy(this.energy, this.width*i+lowestIndex[i], this.energy, this.width*i+lowestIndex[i] + 1, this.actualWidth - lowestIndex[i]);

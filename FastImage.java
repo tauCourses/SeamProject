@@ -25,6 +25,15 @@ public class FastImage
 			this.value = v;
 		}
 	}
+	public enum Direction {
+		LEFT(0),UP(1),Right(2);
+		public int value;
+		private Direction(int v)
+		{
+			this.value = v;
+		}
+	}	
+	
     public int width;
     public int actualWidth;
     public int height;
@@ -113,6 +122,9 @@ public class FastImage
 				return ((float)calculatePixelGradient(i, j));	
 			case 1:
 				return ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
+			case 2:
+				calculateForwardEnergy(i,j);
+				return this.energy[i*this.width+j];
 		}
 		return 0;
 	}
@@ -164,6 +176,35 @@ public class FastImage
 		}
 
 		return (-entropy);
+	}
+	
+	public void calculateForwardEnergy(int i, int j)
+	{
+		this.energy[i * this.width + j] = (float)calculatePixelGradient(i, j);
+		if ((i > 0)&&(j < this.width-1)&&(j>0))
+		{
+			this.energy[i * this.width + j] += Math.min(Math.min(this.energy[(i-1)* this.width + j-1] + C(Direction.LEFT,i,j), this.energy[(i-1)* this.width + j] + C(Direction.UP,i,j)), this.energy[(i-1)* this.width + j+1] + C(Direction.Right,i,j));
+		}
+	}
+	
+	public float C(Direction direction, int i, int j)
+	{
+		switch (direction.value)
+		{
+			case 0 :
+				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)) && (isPixelInBounds(i-1, j)))
+					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)) + Math.abs(calculatePixelGradient(i-1, j) - calculatePixelGradient(i, j-1)));	
+				break;
+			case 1:
+				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)))
+					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)));	
+				break;
+			case 2:
+				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)) && (isPixelInBounds(i-1, j)))
+					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)) + Math.abs(calculatePixelGradient(i-1, j) - calculatePixelGradient(i, j-1)));	
+				break;
+		}
+		return 0;
 	}
 
 	

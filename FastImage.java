@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-import org.omg.Messaging.SyncScopeHelper;
-
 
 public class FastImage
 {
@@ -93,7 +91,7 @@ public class FastImage
 	
 
 	public void calculateImageEnergy() {
-		System.out.println("Starting energy calculation, please hold...");
+		//System.out.println("Starting energy calculation, please hold...");
     	
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) 
@@ -109,7 +107,7 @@ public class FastImage
 				max = this.energy[k];
 		}
 		avgEnergy = 2*sum/this.energy.length;
-		System.out.println("avg : " + avgEnergy + " max: " + max);
+		//System.out.println("avg : " + avgEnergy + " max: " + max);
 	}
 	
 	public float calcEnergy(int i, int j)
@@ -267,7 +265,7 @@ public class FastImage
     public void substruct(int seams)
     {
     	this.calculateImageEnergy();
-    	System.out.println("start substructing " + seams + " seams");
+    	//System.out.println("start substructing " + seams + " seams");
     	//this.printEnergy();
     	
     	for(int i=0;i<seams;i++)
@@ -354,28 +352,28 @@ public class FastImage
     	//System.out.println(minValue);
     	return index;
     }
-    public void printEnergy()
-    {
-    	for(int i=0;i<this.height;i++)
-    	{
-    		for(int j=0; j<this.actualWidth; j++)
-    		{
-    			System.out.print("" + String.format("%.1f", this.energy[i*width+j]) + " ");
-    		}
-    		System.out.println(" ");
-    	}
-    }
-    public void printSumEnergy()
-    {
-    	for(int i=0;i<this.height;i++)
-    	{
-    		for(int j=0; j<this.actualWidth; j++)
-    		{
-    			System.out.print("" + String.format("%3.1f", this.energySum[i*width+j]) + " ");
-    		}
-    		System.out.println(" ");
-    	}
-    }
+//    public void printEnergy()
+//    {
+//    	for(int i=0;i<this.height;i++)
+//    	{
+//    		for(int j=0; j<this.actualWidth; j++)
+//    		{
+//    			System.out.print("" + String.format("%.1f", this.energy[i*width+j]) + " ");
+//    		}
+//    		System.out.println(" ");
+//    	}
+//    }
+//    public void printSumEnergy()
+//    {
+//    	for(int i=0;i<this.height;i++)
+//    	{
+//    		for(int j=0; j<this.actualWidth; j++)
+//    		{
+//    			System.out.print("" + String.format("%3.1f", this.energySum[i*width+j]) + " ");
+//    		}
+//    		System.out.println(" ");
+//    	}
+//    }
 
     public void createNewImage()
     {
@@ -413,7 +411,7 @@ public class FastImage
     public void add(int seams)
     {
     	this.calculateImageEnergy();
-    	System.out.println("start addition " + seams + " seams");
+    	//System.out.println("start addition " + seams + " seams");
     	createNewImage(this.width + seams);
     	for(int i=0;i<seams;i++)
     	{

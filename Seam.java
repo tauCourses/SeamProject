@@ -20,7 +20,7 @@ public class Seam {
 			int columsSeams = Integer.parseInt(args[1]);
 			int rowsSeams = Integer.parseInt(args[2]);
 			int energyType = Integer.parseInt(args[3]);
-			System.out.println("energy type - " + energyType);
+			//System.out.println("energy type - " + energyType);
 			FastImage fastSeamImage = new FastImage(image, energyType);
 
 			
@@ -34,7 +34,7 @@ public class Seam {
 
 			if(rowsSeams != fastSeamImage.height)
 			{
-				System.out.println("rotate...");
+				//System.out.println("rotate...");
 				
 				BufferedImage bufferedImage = new BufferedImage(fastSeamImage.width, fastSeamImage.height, BufferedImage.TYPE_3BYTE_BGR);
 				bufferedImage.setData(Raster.createRaster(bufferedImage.getSampleModel(), new DataBufferByte(fastSeamImage.pixels, fastSeamImage.pixels.length), new Point()));
@@ -54,7 +54,7 @@ public class Seam {
 				if (rowsSeams > fastSeamImage.width)
 					fastSeamImage.add(rowsSeams - fastSeamImage.width);
 				
-				System.out.println("rotate back...");
+				//System.out.println("rotate back...");
 				
 				bufferedImage = new BufferedImage(fastSeamImage.width, fastSeamImage.height, BufferedImage.TYPE_3BYTE_BGR);
 				bufferedImage.setData(Raster.createRaster(bufferedImage.getSampleModel(), new DataBufferByte(fastSeamImage.pixels, fastSeamImage.pixels.length), new Point()));
@@ -73,7 +73,7 @@ public class Seam {
 			}
 				
 			fastSeamImage.save(args[4]);
-			System.out.println("end");
+			//System.out.println("end");
 		} 
 		catch (IOException e) {
 			// TODO Auto-generated catch block

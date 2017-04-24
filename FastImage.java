@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
+import org.omg.Messaging.SyncScopeHelper;
+
 
 public class FastImage
 {
@@ -97,14 +99,7 @@ public class FastImage
 			for (int j = 0; j < this.width; j++) 
 				this.energy[i * width + j] = calcEnergy(i,j);
 		}
-		if(this.energyType == 2)
-		{
-			for(int i=0;i<this.height;i++)
-			{
-				this.energy[i*this.width] = this.energy[i*this.width+1];
-				this.energy[i*this.width + this.actualWidth-1] = this.energy[i*this.width+ this.actualWidth - 2];
-			}
-		}
+		
 		float sum = 0;
 		float max = 0;
 		for(int k=0;k<this.energy.length;k++)
@@ -113,8 +108,8 @@ public class FastImage
 			if(this.energy[k]>max)
 				max = this.energy[k];
 		}
-		avgEnergy = sum/this.energy.length;
-		System.out.println("avg : " + avgEnergy + " max - " + max);
+		avgEnergy = 2*sum/this.energy.length;
+		System.out.println("avg : " + avgEnergy + " max: " + max);
 	}
 	
 	public float calcEnergy(int i, int j)
@@ -151,6 +146,15 @@ public class FastImage
 		return gradient/(float)numOfNeighbors;
 	}
 	
+	public float calculateGradientForTwoPixels(int x1, int y1, int x2, int y2)
+	{
+		float gradient = 0;
+		gradient += Math.abs(getPixelColor(x1,y1,RGBcolor.RED) - getPixelColor(x2,y2,RGBcolor.RED));
+		gradient += Math.abs(getPixelColor(x1,y1,RGBcolor.GREEN) - getPixelColor(x2,y2,RGBcolor.GREEN));
+		gradient += Math.abs(getPixelColor(x1,y1,RGBcolor.BLUE) - getPixelColor(x1,y2,RGBcolor.BLUE));
+		return gradient;
+	}
+	
 	public boolean isPixelInBounds(int i, int j) {
 		return (i >= 0) & (i < this.height) & (j >= 0) & (j < this.actualWidth);
 	}
@@ -183,18 +187,21 @@ public class FastImage
 	
 	public float calculateForwardEnergy(int i, int j)
 	{
+
 		float energy = (float)calculatePixelGradient(i, j);
 	//	this.energy[i * this.width + j] = 
 		if ((i > 0)&&(j < this.width-1)&&(j>0))
-			energy += Math.min(Math.min(this.energy[(i-1)* this.width + j-1] + cost(Direction.LEFT,i,j), 
-					this.energy[(i-1)* this.width + j] + cost(Direction.UP,i,j)), 
-					this.energy[(i-1)* this.width + j+1] + cost(Direction.Right,i,j));
-		if(j==0 || j==this.width-1)
-			energy += 50000;
+			energy += Math.min(
+					Math.min(this.energy[(i-1)* this.width + j-1] + cost(Direction.LEFT,i,j	), 
+					this.energy[(i-1)* this.width + j] + cost(Direction.UP,i,j				)), 
+					this.energy[(i-1)* this.width + j+1] + cost(Direction.Right,i,j))/2;
+		if(i>0 && j==0)// || j==this.width-1))
+			energy += (this.energy[(i-1)* this.width +1] + 700)/2;
 		
-			
-		
-			
+//		System.out.println(i + " " + j);
+		if(i>0 && j== this.actualWidth-1)
+			energy += (this.energy[(i-1)* this.width + this.actualWidth -2] + 700)/2;
+					
 		return energy;
 	}
 	
@@ -203,18 +210,20 @@ public class FastImage
 		switch (direction.value)
 		{
 			case 0 :
-				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)) && (isPixelInBounds(i-1, j)))
-					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)) + Math.abs(calculatePixelGradient(i-1, j) - calculatePixelGradient(i, j-1)));	
+				if (isPixelInBounds(i, j+1) && isPixelInBounds(i, j-1) && isPixelInBounds(i-1, j))
+					return (calculateGradientForTwoPixels(i, j+1, i, j-1) + calculateGradientForTwoPixels(i-1, j, i, j-1));
+					//return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)) + Math.abs(calculatePixelGradient(i-1, j) - calculatePixelGradient(i, j-1)));	
 				break;
 			case 1:
 				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)))
-					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)));	
+					return 2*(calculateGradientForTwoPixels(i, j+1, i, j-1));	
 				break;
 			case 2:
 				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)) && (isPixelInBounds(i-1, j)))
-					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)) + Math.abs(calculatePixelGradient(i-1, j) - calculatePixelGradient(i, j-1)));	
+					return (calculateGradientForTwoPixels(i, j+1, i, j-1) + calculateGradientForTwoPixels(i-1, j, i, j-1));	
 				break;
 		}
+		
 		return 0;
 	}
 
@@ -463,14 +472,14 @@ public class FastImage
     			int temp = (int)(this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k]&0xff);
 	    		temp +=		(int)(this.pixels[(this.width*i+lowestIndex[i]-1)* this.pixelLength +k]&0xff);
 	    		
-	    		this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k] = (byte)255;//(byte)(temp/2);
+	    		this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k] = (byte)(temp/2);
 	    	}
     		if(isPixelInBounds(i, lowestIndex[i]))
-    			energy[i * this.width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i]) + avgEnergy/4;
+    			energy[i * this.width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i])  + avgEnergy/4;
     		if(isPixelInBounds(i, lowestIndex[i]-1))
-    			energy[i * this.width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1) + avgEnergy/2;
+    			energy[i * this.width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1)  + avgEnergy/2;
     		if(isPixelInBounds(i, lowestIndex[i]+1))
-    			energy[i * this.width + lowestIndex[i]+1] = calcEnergy(i, lowestIndex[i]+1) + avgEnergy;
+    			energy[i * this.width + lowestIndex[i]+1] = calcEnergy(i, lowestIndex[i]+1)  + avgEnergy;
     	//	System.out.print("" + lowestIndex[i]+ " ");
     	}
     	//System.out.println("");

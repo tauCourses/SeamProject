@@ -20,6 +20,7 @@ public class Seam {
 			int columsSeams = Integer.parseInt(args[1]);
 			int rowsSeams = Integer.parseInt(args[2]);
 			int energyType = Integer.parseInt(args[3]);
+			System.out.println("energy type - " + energyType);
 			FastImage fastSeamImage = new FastImage(image, energyType);
 
 			

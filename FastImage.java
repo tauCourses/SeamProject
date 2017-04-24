@@ -7,13 +7,8 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-
-
 import javax.imageio.ImageIO;
 
-import org.omg.Messaging.SyncScopeHelper;
 
 public class FastImage
 {
@@ -102,6 +97,14 @@ public class FastImage
 			for (int j = 0; j < this.width; j++) 
 				this.energy[i * width + j] = calcEnergy(i,j);
 		}
+		if(this.energyType == 2)
+		{
+			for(int i=0;i<this.height;i++)
+			{
+				this.energy[i*this.width] = this.energy[i*this.width+1];
+				this.energy[i*this.width + this.actualWidth-1] = this.energy[i*this.width+ this.actualWidth - 2];
+			}
+		}
 		float sum = 0;
 		float max = 0;
 		for(int k=0;k<this.energy.length;k++)
@@ -123,8 +126,8 @@ public class FastImage
 			case 1:
 				return ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
 			case 2:
-				calculateForwardEnergy(i,j);
-				return this.energy[i*this.width+j];
+				return calculateForwardEnergy(i,j);
+				// this.energy[i*this.width+j];
 		}
 		return 0;
 	}
@@ -178,16 +181,24 @@ public class FastImage
 		return (-entropy);
 	}
 	
-	public void calculateForwardEnergy(int i, int j)
+	public float calculateForwardEnergy(int i, int j)
 	{
-		this.energy[i * this.width + j] = (float)calculatePixelGradient(i, j);
+		float energy = (float)calculatePixelGradient(i, j);
+	//	this.energy[i * this.width + j] = 
 		if ((i > 0)&&(j < this.width-1)&&(j>0))
-		{
-			this.energy[i * this.width + j] += Math.min(Math.min(this.energy[(i-1)* this.width + j-1] + C(Direction.LEFT,i,j), this.energy[(i-1)* this.width + j] + C(Direction.UP,i,j)), this.energy[(i-1)* this.width + j+1] + C(Direction.Right,i,j));
-		}
+			energy += Math.min(Math.min(this.energy[(i-1)* this.width + j-1] + cost(Direction.LEFT,i,j), 
+					this.energy[(i-1)* this.width + j] + cost(Direction.UP,i,j)), 
+					this.energy[(i-1)* this.width + j+1] + cost(Direction.Right,i,j));
+		if(j==0 || j==this.width-1)
+			energy += 50000;
+		
+			
+		
+			
+		return energy;
 	}
 	
-	public float C(Direction direction, int i, int j)
+	public float cost(Direction direction, int i, int j)
 	{
 		switch (direction.value)
 		{
@@ -452,7 +463,7 @@ public class FastImage
     			int temp = (int)(this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k]&0xff);
 	    		temp +=		(int)(this.pixels[(this.width*i+lowestIndex[i]-1)* this.pixelLength +k]&0xff);
 	    		
-	    		this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k] = (byte)(temp/2);
+	    		this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k] = (byte)255;//(byte)(temp/2);
 	    	}
     		if(isPixelInBounds(i, lowestIndex[i]))
     			energy[i * this.width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i]) + avgEnergy/4;

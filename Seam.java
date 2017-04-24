@@ -37,8 +37,7 @@ public class Seam {
 			if(rowsSeams != fastSeamImage.height)
 			{
 				System.out.println("rotate...");
-				System.out.println(fastSeamImage.width);
-				System.out.println(fastSeamImage.height);
+				
 				BufferedImage bufferedImage = new BufferedImage(fastSeamImage.width, fastSeamImage.height, BufferedImage.TYPE_3BYTE_BGR);
 				bufferedImage.setData(Raster.createRaster(bufferedImage.getSampleModel(), new DataBufferByte(fastSeamImage.pixels, fastSeamImage.pixels.length), new Point()));
 			       
@@ -49,20 +48,15 @@ public class Seam {
 				AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 				bufferedImage = op.filter(bufferedImage, null);
 				
-				System.out.println(bufferedImage.getWidth());
-				System.out.println(bufferedImage.getHeight());
 				
 				fastSeamImage = new FastImage(bufferedImage,energyType);
 				
-				System.out.println("rs" + columsSeams);
 				if (rowsSeams < fastSeamImage.width)
 					fastSeamImage.substruct(fastSeamImage.width - rowsSeams );
 				if (rowsSeams > fastSeamImage.width)
 					fastSeamImage.add(rowsSeams - fastSeamImage.width);
 				
-				System.out.println("new - " + fastSeamImage.actualWidth);
-				
-				System.out.println(fastSeamImage.height);
+				System.out.println("rotate back...");
 				
 				bufferedImage = new BufferedImage(fastSeamImage.width, fastSeamImage.height, BufferedImage.TYPE_3BYTE_BGR);
 				bufferedImage.setData(Raster.createRaster(bufferedImage.getSampleModel(), new DataBufferByte(fastSeamImage.pixels, fastSeamImage.pixels.length), new Point()));
@@ -75,6 +69,9 @@ public class Seam {
 				op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 				bufferedImage = op.filter(bufferedImage, null);
 				fastSeamImage = new FastImage(bufferedImage,energyType);
+				//fix problem in the first line: 
+				System.arraycopy(fastSeamImage.pixels, fastSeamImage.width*2*fastSeamImage.pixelLength, fastSeamImage.pixels, 0, fastSeamImage.width*fastSeamImage.pixelLength);
+				
 			}
 				
 			

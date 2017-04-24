@@ -472,9 +472,9 @@ public class FastImage
 	    		this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k] = (byte)(temp/2);
 	    	}
     		if(isPixelInBounds(i, lowestIndex[i]))
-    			energy[i * this.width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i])  + avgEnergy/4;
+    			energy[i * this.width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i])  + avgEnergy;
     		if(isPixelInBounds(i, lowestIndex[i]-1))
-    			energy[i * this.width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1)  + avgEnergy/2;
+    			energy[i * this.width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1)  + avgEnergy;
     		if(isPixelInBounds(i, lowestIndex[i]+1))
     			energy[i * this.width + lowestIndex[i]+1] = calcEnergy(i, lowestIndex[i]+1)  + avgEnergy;
     	//	System.out.print("" + lowestIndex[i]+ " ");

@@ -19,8 +19,9 @@ public class Seam {
 
 			int columsSeams = Integer.parseInt(args[1]);
 			int rowsSeams = Integer.parseInt(args[2]);
-			FastImage fastSeamImage = new FastImage(image);
-			fastSeamImage.energyType = Integer.parseInt(args[3]);
+			int energyType = Integer.parseInt(args[3]);
+			FastImage fastSeamImage = new FastImage(image, energyType);
+
 			
 			if(columsSeams != fastSeamImage.width)
 			{
@@ -51,7 +52,7 @@ public class Seam {
 				System.out.println(bufferedImage.getWidth());
 				System.out.println(bufferedImage.getHeight());
 				
-				fastSeamImage = new FastImage(bufferedImage);
+				fastSeamImage = new FastImage(bufferedImage,energyType);
 				
 				System.out.println("rs" + columsSeams);
 				if (rowsSeams < fastSeamImage.width)
@@ -73,21 +74,9 @@ public class Seam {
 				tx.translate(-fastSeamImage.width / 2,-fastSeamImage.height / 2);
 				op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 				bufferedImage = op.filter(bufferedImage, null);
-				fastSeamImage = new FastImage(bufferedImage);
+				fastSeamImage = new FastImage(bufferedImage,energyType);
 			}
-				/*System.out.println("rotate back");
-
-				bufferedImage = new BufferedImage(fastSeamImage.width, fastSeamImage.height, BufferedImage.TYPE_3BYTE_BGR);
-				bufferedImage.setData(Raster.createRaster(bufferedImage.getSampleModel(), new DataBufferByte(fastSeamImage.pixels, fastSeamImage.pixels.length), new Point()));
-			       
-				tx = AffineTransform.getScaleInstance(-1, 1);
-				tx.translate(0, -bufferedImage.getHeight(null));
-				op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-				bufferedImage = op.filter(bufferedImage, null);
 				
-				fastSeamImage = new FastImage(bufferedImage);
-				
-			}*/
 			
 			fastSeamImage.save(args[4]);
 			System.out.println("end");

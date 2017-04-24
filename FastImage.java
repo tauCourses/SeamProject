@@ -7,6 +7,7 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 
@@ -38,9 +39,9 @@ public class FastImage
 	public int energyType;
 	
 
-	public FastImage(BufferedImage image)
+	public FastImage(BufferedImage image, int energyType)
     {
-
+		this.energyType = energyType;
         pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         width = image.getWidth();
         height = image.getHeight();
@@ -52,7 +53,22 @@ public class FastImage
         energySum = new float[width*height];
         
     }
+	public static String getExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int extensionPos = filename.lastIndexOf('.');
+        int lastUnixPos = filename.lastIndexOf('/');
+        int lastWindowsPos = filename.lastIndexOf('\\');
+        int lastSeparator = Math.max(lastUnixPos, lastWindowsPos);
 
+        int index = lastSeparator > extensionPos ? -1 : extensionPos;
+        if (index == -1) {
+            return "";
+        } else {
+            return filename.substring(index + 1);
+        }
+    }
 	public void save(String path) throws IOException {
 		System.arraycopy(this.pixels, this.width*2*this.pixelLength, this.pixels, 0, this.width*this.pixelLength);
 		
@@ -66,7 +82,7 @@ public class FastImage
 		
 		BufferedImage img = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
 		img.setData(Raster.createRaster(img.getSampleModel(), new DataBufferByte(pixels, pixels.length), new Point()));
-		ImageIO.write(img, "bmp", outputfile);
+		ImageIO.write(img,  getExtension(path), outputfile);
 
 	}
 	
@@ -91,7 +107,14 @@ public class FastImage
 	
 	public float calcEnergy(int i, int j)
 	{
-		return ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
+		switch(this.energyType)
+		{
+			case 0:
+				return ((float)calculatePixelGradient(i, j));	
+			case 1:
+				return ((float)(gradientWeight * calculatePixelGradient(i, j))+ (entropyWeight * calculatePixelEntropy(i, j))) / (gradientWeight + entropyWeight);
+		}
+		return 0;
 	}
 	
 	public float calculatePixelGradient(int x, int y) {

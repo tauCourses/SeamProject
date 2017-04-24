@@ -70,7 +70,6 @@ public class FastImage
         }
     }
 	public void save(String path) throws IOException {
-		System.arraycopy(this.pixels, this.width*2*this.pixelLength, this.pixels, 0, this.width*this.pixelLength);
 		
 		File outputfile = new File(path);
 /*		 BufferedImage bufferedImage = new BufferedImage(this.width,
@@ -88,7 +87,8 @@ public class FastImage
 	
 
 	public void calculateImageEnergy() {
-
+		System.out.println("Starting energy calculation, please hold...");
+    	
 		for (int i = 0; i < this.height; i++) {
 			for (int j = 0; j < this.width; j++) 
 				this.energy[i * width + j] = calcEnergy(i,j);
@@ -166,21 +166,7 @@ public class FastImage
 		return (-entropy);
 	}
 
-	// getters
-    public int getRGB(int x, int y)
-    {
-        int pos = (x * pixelLength * width) + (y * pixelLength);
-
-        int argb = -16777216; // 255 alpha
-        if (hasAlphaChannel == 1)
-            argb = (((int) pixels[pos++] & 0xff) << 24); // alpha
-        
-
-        argb += ((int) pixels[pos++] & 0xff); // blue
-        argb += (((int) pixels[pos++] & 0xff) << 8); // green
-        argb += (((int) pixels[pos++] & 0xff) << 16); // red
-        return argb;
-    }
+	
     
     public int getPixelColor(int x, int y, RGBcolor color)
     {   
@@ -222,9 +208,8 @@ public class FastImage
     
     public void substruct(int seams)
     {
-    	System.out.println("Starting energy calculation, please hold...");
     	this.calculateImageEnergy();
-    	System.out.println("start substructing");
+    	System.out.println("start substructing " + seams + " seams");
     	//this.printEnergy();
     	
     	for(int i=0;i<seams;i++)
@@ -235,7 +220,7 @@ public class FastImage
         	//this.printEnergy();
     	}
     	createNewImage();
-    	System.out.println("");
+    	//System.out.println("");
     	//System.out.println("after substruct:");
     	//this.printEnergy();
     }
@@ -367,11 +352,12 @@ public class FastImage
     	
     }
 
-    public void add(int number)
+    public void add(int seams)
     {
     	this.calculateImageEnergy();
-    	createNewImage(this.width + number);
-    	for(int i=0;i<number;i++)
+    	System.out.println("start addition " + seams + " seams");
+    	createNewImage(this.width + seams);
+    	for(int i=0;i<seams;i++)
     	{
     		this.updateEnergyDynamically();
     		this.addLine();

@@ -30,10 +30,7 @@ public class Seam {
 				if (columsSeams > fastSeamImage.width)
 					fastSeamImage.add(columsSeams - fastSeamImage.actualWidth);
 			}
-//			BufferedImage bufferedImage = new BufferedImage(fastSeamImage.width,fastSeamImage.height, BufferedImage.TYPE_INT_RGB);
-//			for (int i = 0; i < fastSeamImage.height; i++)
-//				for (int j = 0; j < fastSeamImage.width; j++)
-//					bufferedImage.setRGB( j, i, fastSeamImage.getRGB(i, j));
+
 			if(rowsSeams != fastSeamImage.height)
 			{
 				System.out.println("rotate...");
@@ -74,7 +71,6 @@ public class Seam {
 				
 			}
 				
-			
 			fastSeamImage.save(args[4]);
 			System.out.println("end");
 		} 

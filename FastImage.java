@@ -101,7 +101,7 @@ public class FastImage
 			if(this.energy[k]>max)
 				max = this.energy[k];
 		}
-		avgEnergy = sum/this.energy.length *2;
+		avgEnergy = sum/this.energy.length;
 		System.out.println("avg : " + avgEnergy + " max - " + max);
 	}
 	
@@ -266,10 +266,10 @@ public class FastImage
     	for(int i=0;i<this.height;i++)
     	{
     		if(isPixelInBounds(i, lowestIndex[i]))
-    			energy[i * width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i]) + this.avgEnergy;
+    			energy[i * width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i]) ;//this.avgEnergy;
     		
     		if(isPixelInBounds(i, lowestIndex[i]-1))
-    			energy[i * width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1) + this.avgEnergy;
+    			energy[i * width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1) ;// this.avgEnergy;
     		
     	//	System.out.print("" + lowestIndex[i]+ " ");
     	}
@@ -406,7 +406,7 @@ public class FastImage
     	{
     		for(int k=0; k<this.pixelLength;k++)
     		{
-    			if(lowestIndex[i] == 0)
+    			if(lowestIndex[i] == 0)	
     				break;
     			int temp = (int)(this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k]&0xff);
 	    		temp +=		(int)(this.pixels[(this.width*i+lowestIndex[i]-1)* this.pixelLength +k]&0xff);
@@ -414,11 +414,11 @@ public class FastImage
 	    		this.pixels[(this.width*i+lowestIndex[i])* this.pixelLength +k] = (byte)(temp/2);
 	    	}
     		if(isPixelInBounds(i, lowestIndex[i]))
-    			energy[i * this.width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i]) + avgEnergy;
+    			energy[i * this.width + lowestIndex[i]] = calcEnergy(i, lowestIndex[i]) + avgEnergy/4;
     		if(isPixelInBounds(i, lowestIndex[i]-1))
-    			energy[i * this.width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1) +avgEnergy;
+    			energy[i * this.width + lowestIndex[i]-1] = calcEnergy(i, lowestIndex[i]-1) + avgEnergy/2;
     		if(isPixelInBounds(i, lowestIndex[i]+1))
-    			energy[i * this.width + lowestIndex[i]+1] = calcEnergy(i, lowestIndex[i]+1) +avgEnergy;
+    			energy[i * this.width + lowestIndex[i]+1] = calcEnergy(i, lowestIndex[i]+1) + avgEnergy;
     	//	System.out.print("" + lowestIndex[i]+ " ");
     	}
     	//System.out.println("");

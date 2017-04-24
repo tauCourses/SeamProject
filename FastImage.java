@@ -148,6 +148,15 @@ public class FastImage
 		return gradient/(float)numOfNeighbors;
 	}
 	
+	public float calculateGradientForTwoPixels(int x1, int y1, int x2, int y2)
+	{
+		float gradient = 0;
+		gradient += Math.abs(getPixelColor(x1,y1,RGBcolor.RED) - getPixelColor(x2,y2,RGBcolor.RED));
+		gradient += Math.abs(getPixelColor(x1,y1,RGBcolor.GREEN) - getPixelColor(x2,y2,RGBcolor.GREEN));
+		gradient += Math.abs(getPixelColor(x1,y1,RGBcolor.BLUE) - getPixelColor(x1,y2,RGBcolor.BLUE));
+		return gradient;
+	}
+	
 	public boolean isPixelInBounds(int i, int j) {
 		return (i >= 0) & (i < this.height) & (j >= 0) & (j < this.actualWidth);
 	}
@@ -180,10 +189,12 @@ public class FastImage
 	
 	public void calculateForwardEnergy(int i, int j)
 	{
-		this.energy[i * this.width + j] = (float)calculatePixelGradient(i, j);
+		this.energy[i * this.width + j] = calculatePixelGradient(i, j);
 		if ((i > 0)&&(j < this.width-1)&&(j>0))
 		{
-			this.energy[i * this.width + j] += Math.min(Math.min(this.energy[(i-1)* this.width + j-1] + C(Direction.LEFT,i,j), this.energy[(i-1)* this.width + j] + C(Direction.UP,i,j)), this.energy[(i-1)* this.width + j+1] + C(Direction.Right,i,j));
+			this.energy[i * this.width + j] += Math.min(Math.min(this.energy[(i-1)* this.width + j-1] + C(Direction.LEFT,i,j) , this.energy[(i-1)* this.width + j] + C(Direction.UP,i,j)),
+					this.energy[(i-1)* this.width + j+1] + C(Direction.Right,i,j));
+			
 		}
 	}
 	
@@ -193,15 +204,16 @@ public class FastImage
 		{
 			case 0 :
 				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)) && (isPixelInBounds(i-1, j)))
-					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)) + Math.abs(calculatePixelGradient(i-1, j) - calculatePixelGradient(i, j-1)));	
+					return (calculateGradientForTwoPixels(i, j+1, i, j-1) + calculateGradientForTwoPixels(i-1, j, i, j-1));
+					//return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)) + Math.abs(calculatePixelGradient(i-1, j) - calculatePixelGradient(i, j-1)));	
 				break;
 			case 1:
 				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)))
-					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)));	
+					return (calculateGradientForTwoPixels(i, j+1, i, j-1));	
 				break;
 			case 2:
 				if (isPixelInBounds(i, j+1) && (isPixelInBounds(i, j-1)) && (isPixelInBounds(i-1, j)))
-					return (Math.abs(calculatePixelGradient(i, j+1) - calculatePixelGradient(i, j-1)) + Math.abs(calculatePixelGradient(i-1, j) - calculatePixelGradient(i, j-1)));	
+					return (calculateGradientForTwoPixels(i, j+1, i, j-1) + calculateGradientForTwoPixels(i-1, j, i, j-1));	
 				break;
 		}
 		return 0;
